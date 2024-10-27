@@ -47,21 +47,3 @@ In the above implementation if P1 and P2 both write to a shared page, we will en
 Finally, we shall activate the swap space. If a memory page is not available, we may need to remove a shared memory page. With the implementation of Copy-on-Write (COW), it is necessary to update the page table entry (PTE) of not just the victim process, but also any other processes that are accessing the same page. The existing *rmap* just contains the reference count, which is insufficient for this operation. Thus, we extend the *rmap* data structure to retain information about the processes that are associated with the physical page. Now, we can modify the page table entries (PTEs) of the processes that are utilizing the same page. Note that in our implementation, a physical page reverse maps to same virtual page numbers in different processes. 
 
 Additionally, it will be necessary to save the current *rmap* data corresponding to the physical page that is in the swap space. This will ensure when we bring the memory page back from disk into memory at a later time, we must update all the PTEs properly. Note: It is important to update both the swap slot and rmap data structures.
-
-# C) Process Scheduling
-The `xv6` scheduler implements a primitive round robin scheduling algorithm. Although this scheduling algorithm ensures that no process is starved of CPU time, there is no notion of "priority" or "types" of processes - all processes get equal CPU time irrespective of the importance of the tasks they perform. In this part, we implemented another fairly simple scheduling algorithm, which will allow processes to specify whether they are "foreground" or "background", and they will be allocated CPU time accordingly. 
-
-## Introduction
-Broadly, processes can be classified into the following two types: 
-- **Foreground Processes**: These are tasks that require a lot of user interaction, and are time-sensitive. For example, a music player on a phone, or a text editor like Vim running in the terminal. Such tasks need to be scheduled regularly for a smooth user experience.  
-
-- **Background Processes**: These are tasks that are not very time-sensitive. They may be long computational tasks that do not require much user interaction. For example, downloading large data from a server may be a background process. 
-
-We would like to add a functionality using which a process can indicate to the operating system whether it is a foreground process or a background process. The scheduler must also be designed so that time slices are given to processes according to the preference each process indicates. 
-
-## System Calls 
-In the first part of the lab, we implemented 2 system calls.
-- `int set_sched_policy(void)`: Using this system call, a process can indicate to the operating system whether it is a foreground or a background process. A foreground process would have `policy=0`, while a background process would have `policy=1`. The system call should return `0` if the policy for the process was set successfully, and `-22` in all other cases. 
-- `int get_sched_policy(void)`: Using this system call, a process can get the scheduling policy for itself.
-## Scheduler 
-The scheduling algorithm is simple in principle: Overall, foreground processes must be allotted 90% of the CPU time, and background processes 10%. Within foreground and background processes, we may continue to schedule in a round-robin manner. 
