@@ -1,3 +1,5 @@
+xv6 with Swap Space and Copy-On-Write as part of course Operating Systems at IIT Delhi (2023-24 Semester II)
+
 # A) Swap Space
 
 During the creation of processes in the xv6 operating system, physical memory pages are allocated and assigned. As processes consume more memory, the system can run out of available physical memory. To mitigate this issue, the introduction of a swap space in xv6 is necessary. This swap space on disk stores unused memory pages, freeing up memory for other processes. 
