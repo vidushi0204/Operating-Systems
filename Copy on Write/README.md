@@ -1,4 +1,4 @@
-# COL331/633 Project: Copy-On-Write
+# Copy-On-Write
 
 During the fork system call, xv6 creates a new page directory and copies the memory contents of the parent process into the child process. If the process *P1* allocates an array of 1MB and subsequently invokes the fork system call, xv6 assigns an additional 1MB of memory to the child process *P2* while copying the contents of *P1* into *P2*. If neither *P1* nor *P2* modify the 1MB array, then we unnecessarily created a copy. In order to improve memory utilization, we would like to extend xv6 with the copy-on-write (COW) mechanism.
 
@@ -20,22 +20,3 @@ In the above implementation if P1 and P2 both write to a shared page, we will en
 Finally, we shall activate the swap space. If a memory page is not available, we may need to remove a shared memory page. With the implementation of Copy-on-Write (COW), it is necessary to update the page table entry (PTE) of not just the victim process, but also any other processes that are accessing the same page. The existing *rmap* just contains the reference count, which is insufficient for this operation. Thus, we extend the *rmap* data structure to retain information about the processes that are associated with the physical page. Now, we can modify the page table entries (PTEs) of the processes that are utilizing the same page. Note that in our implementation, a physical page reverse maps to same virtual page numbers in different processes. 
 
 Additionally, it will be necessary to save the current *rmap* data corresponding to the physical page that is in the swap space. This will ensure when we bring the memory page back from disk into memory at a later time, we must update all the PTEs properly. Note: It is important to update both the swap slot and rmap data structures.
-
- ## Deliverables
-In this assignment, you need to use the given codebase as the base code. The following additions are made on the xv6-public code:
-1. We have added the following system calls to evaluate your submission: get_rss, and getNumFreePages. You are prohibited from making any changes to them.
-2. We have added a configuration parameter `SWAPBLOCKS` that denotes the number of blocks dedicated to the swap space. Note that the evaluation script will override memlayout.h, and param.h.
-
-In the project root directory, run the following commands:
-```
-make clean
-tar czvf project_<entryNumber1>_<entryNumber2>_<entryNumber3>.tar.gz *
-```
-
-This will create a tarball with the name, project_<entryNumber1>_<entryNumber2>_<entryNumber3>.tar.gz in the same directory. Submit this tarball on Moodle. Entry number format: 2020CS10567. (All English letters will be in capitals in the entry number)
-
-## Grading Rules
-To Be Announced
-
-## Auto-grader
-To Be Announced
